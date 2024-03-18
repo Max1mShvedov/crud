@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import web.dao.UserDao;
 import web.model.User;
+import web.services.UserService;
 
 import java.util.List;
 
@@ -14,11 +15,11 @@ import java.util.List;
 public class UserController {
 
     @Autowired
-    private UserDao userDao;
+    private UserService userService;
 
     @GetMapping("/")
     public String index(Model model) {
-        List<User> users = userDao.getAllUsers();
+        List<User> users = userService.getAllUsers();
         model.addAttribute("users", users);
         return "index";
     }
@@ -31,13 +32,13 @@ public class UserController {
 
     @PostMapping("/add")
     public String addUserSubmit(@ModelAttribute(name = "name") User user) {
-        userDao.saveUser(user);
+        userService.saveUser(user);
         return "redirect:/";
     }
 
     @GetMapping("/{id}/edit")
     public String editUserForm(@PathVariable Long id, Model model) {
-        User user = userDao.getUserById(id);
+        User user = userService.getUserById(id);
         model.addAttribute("user", user);
         return "editUser";
     }
@@ -45,13 +46,13 @@ public class UserController {
     @PostMapping("/{id}/edit")
     public String editUserSubmit(@PathVariable Long id, @ModelAttribute User user) {
         user.setId(id);
-        userDao.updateUser(user);
+        userService.updateUser(id, user);
         return "redirect:/";
     }
 
     @GetMapping("/delete/{id}")
     public String deleteUser(@PathVariable("id") Long id) {
-        userDao.deleteUser(id);
+        userService.deleteUser(id);
         return "redirect:/";
     }
 }
